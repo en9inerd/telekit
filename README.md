@@ -11,14 +11,6 @@ A simple framework for building Telegram bots using the MTProto protocol via [go
 - Bot profile management
 - Session management
 
-## Documentation
-
-The package documentation is auto-generated using [gomarkdoc](https://github.com/princjef/gomarkdoc).
-
-<!-- gomarkdoc:embed:start -->
-
-<!-- gomarkdoc:embed:end -->
-
 ## Installation
 
 ```bash
@@ -61,6 +53,14 @@ func main() {
 	}
 }
 ```
+
+## Documentation
+
+The package documentation is auto-generated using [gomarkdoc](https://github.com/princjef/gomarkdoc).
+
+<!-- gomarkdoc:embed:start -->
+
+<!-- gomarkdoc:embed:end -->
 
 ## License
 
