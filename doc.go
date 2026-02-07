@@ -1,4 +1,4 @@
-// Package tgbot provides a high-level framework for building Telegram bots
+// Package telekit provides a high-level framework for building Telegram bots
 // using the MTProto protocol via gotd/td.
 //
 // It simplifies common bot development tasks such as:
@@ -9,7 +9,7 @@
 //
 // Basic usage:
 //
-//	bot, err := tgbot.New(tgbot.Config{
+//	bot, err := telekit.New(telekit.Config{
 //	    APIID:    12345,
 //	    APIHash:  "your-api-hash",
 //	    BotToken: "your-bot-token",
@@ -18,16 +18,16 @@
 //	    log.Fatal(err)
 //	}
 //
-//	bot.OnChannelPost(channelID, func(ctx *tgbot.Context) error {
+//	bot.OnChannelPost(channelID, func(ctx *telekit.Context) error {
 //	    // Handle new channel post
 //	    return nil
 //	})
 //
-//	bot.Command("start", nil, func(ctx *tgbot.Context) error {
+//	bot.Command("start", nil, func(ctx *telekit.Context) error {
 //	    return ctx.Reply("Hello!")
 //	})
 //
 //	if err := bot.Run(context.Background()); err != nil {
 //	    log.Fatal(err)
 //	}
-package tgbot
+package telekit

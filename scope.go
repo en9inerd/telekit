@@ -1,4 +1,4 @@
-package tgbot
+package telekit
 
 import "github.com/gotd/td/tg"
 

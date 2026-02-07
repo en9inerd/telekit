@@ -1,4 +1,4 @@
-# tgbot
+# telekit
 
 A high-level framework for building Telegram bots using the MTProto protocol via [gotd/td](https://github.com/gotd/td).
 
@@ -14,7 +14,7 @@ A high-level framework for building Telegram bots using the MTProto protocol via
 ## Installation
 
 ```bash
-go get github.com/en9inerd/tgbot
+go get github.com/en9inerd/telekit
 ```
 
 ## Usage
@@ -26,11 +26,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/en9inerd/tgbot"
+	"github.com/en9inerd/telekit"
 )
 
 func main() {
-	bot, err := tgbot.New(tgbot.Config{
+	bot, err := telekit.New(telekit.Config{
 		APIID:    12345,
 		APIHash:  "your-api-hash",
 		BotToken: "your-bot-token",
@@ -39,11 +39,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bot.Command("start", nil, func(ctx *tgbot.Context) error {
+	bot.Command("start", nil, func(ctx *telekit.Context) error {
 		return ctx.Reply("Hello!")
 	})
 
-	bot.OnChannelPost(channelID, func(ctx *tgbot.Context) error {
+	bot.OnChannelPost(channelID, func(ctx *telekit.Context) error {
 		// Handle new channel post
 		return nil
 	})

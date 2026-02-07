@@ -1,4 +1,4 @@
-package tgbot
+package telekit
 
 import (
 	"log/slog"
@@ -27,7 +27,7 @@ type Config struct {
 	Logger *slog.Logger
 
 	// DeviceModel is the device model to report to Telegram.
-	// Defaults to "tgbot" if empty.
+	// Defaults to "telekit" if empty.
 	DeviceModel string
 
 	// SystemVersion is the system version to report to Telegram.
@@ -74,7 +74,7 @@ func (c *Config) setDefaults() {
 		c.Logger = slog.Default()
 	}
 	if c.DeviceModel == "" {
-		c.DeviceModel = "tgbot"
+		c.DeviceModel = "telekit"
 	}
 	if c.SystemVersion == "" {
 		c.SystemVersion = "1.0"

@@ -1,4 +1,4 @@
-module github.com/en9inerd/tgbot
+module github.com/en9inerd/telekit
 
 go 1.24.0
 
