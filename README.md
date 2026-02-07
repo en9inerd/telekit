@@ -1,6 +1,6 @@
 # telekit
 
-A high-level framework for building Telegram bots using the MTProto protocol via [gotd/td](https://github.com/gotd/td).
+A simple framework for building Telegram bots using the MTProto protocol via [gotd/td](https://github.com/gotd/td).
 
 ## Features
 

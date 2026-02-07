@@ -1,4 +1,4 @@
-// Package telekit provides a high-level framework for building Telegram bots
+// Package telekit provides a simple framework for building Telegram bots
 // using the MTProto protocol via gotd/td.
 //
 // It simplifies common bot development tasks such as:
