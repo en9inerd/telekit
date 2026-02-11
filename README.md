@@ -106,6 +106,7 @@ if err := bot.Run(context.Background()); err != nil {
 ## Index
 
 - [Variables](<#variables>)
+- [func EntitiesToHTML\(text string, entities \[\]tg.MessageEntityClass\) string](<#EntitiesToHTML>)
 - [type Bot](<#Bot>)
   - [func New\(cfg Config\) \(\*Bot, error\)](<#New>)
   - [func \(b \*Bot\) API\(\) \*tg.Client](<#Bot.API>)
@@ -233,6 +234,15 @@ var (
     ErrAlreadyRunning = errors.New("telekit: bot is already running")
 )
 ```
+
+<a name="EntitiesToHTML"></a>
+## func EntitiesToHTML
+
+```go
+func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string
+```
+
+EntitiesToHTML converts Telegram message entities to HTML. Properly handles overlapping/nested entities.
 
 <a name="Bot"></a>
 ## type Bot
