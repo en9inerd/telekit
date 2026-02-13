@@ -1,6 +1,9 @@
 package telekit
 
-import "slices"
+import (
+	"slices"
+	"strings"
+)
 
 // HandlerFunc is the function signature for event handlers.
 type HandlerFunc func(ctx *Context) error
@@ -93,6 +96,40 @@ func (f *Filter) matches(ctx *Context) bool {
 	}
 	if f.Outgoing && !ctx.IsOutgoing() {
 		return false
+	}
+
+	if f.Custom != nil && !f.Custom(ctx) {
+		return false
+	}
+
+	return true
+}
+
+func (f *CallbackFilter) matches(ctx *CallbackContext) bool {
+	if f.DataPrefix != "" && !strings.HasPrefix(ctx.data, f.DataPrefix) {
+		return false
+	}
+
+	if len(f.Users) > 0 && !slices.Contains(f.Users, ctx.userID) {
+		return false
+	}
+
+	if f.Custom != nil && !f.Custom(ctx) {
+		return false
+	}
+
+	return true
+}
+
+func (f *DeleteFilter) matches(ctx *DeleteContext) bool {
+	if len(f.Chats) > 0 {
+		targetID := ctx.channelID
+		if targetID == 0 {
+			targetID = ctx.chatID
+		}
+		if !slices.Contains(f.Chats, targetID) {
+			return false
+		}
 	}
 
 	if f.Custom != nil && !f.Custom(ctx) {
