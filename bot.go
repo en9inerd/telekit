@@ -7,6 +7,7 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/gotd/contrib/middleware/floodwait"
 	"github.com/gotd/td/session"
 	"github.com/gotd/td/telegram"
 	"github.com/gotd/td/telegram/updates"
@@ -70,7 +71,7 @@ func New(cfg Config) (*Bot, error) {
 		Logger:        cfg.zapLogger(),
 		UpdateHandler: gaps,
 		Middlewares: []telegram.Middleware{
-			floodWaitMiddleware{},
+			floodwait.NewSimpleWaiter(),
 			updhook.UpdateHook(gaps.Handle),
 		},
 		Device: telegram.DeviceConfig{
