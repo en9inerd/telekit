@@ -1,6 +1,6 @@
 module github.com/en9inerd/telekit
 
-go 1.25.7
+go 1.26
 
 require (
 	github.com/gotd/contrib v0.21.1
