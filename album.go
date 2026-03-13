@@ -14,8 +14,8 @@ import (
 // when the album is complete.
 type albumCollector struct {
 	mu       sync.Mutex
-	albums   map[int64][]*tg.Message  // groupedID -> messages
-	entities map[int64]tg.Entities    // groupedID -> entities (from first message)
+	albums   map[int64][]*tg.Message // groupedID -> messages
+	entities map[int64]tg.Entities   // groupedID -> entities (from first message)
 	timers   map[int64]*time.Timer
 	timeout  time.Duration
 	callback func(ctx context.Context, messages []*tg.Message, entities tg.Entities)
