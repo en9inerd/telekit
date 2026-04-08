@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gotd/td/telegram/message"
+	"github.com/gotd/td/telegram/message/peer"
 	"github.com/gotd/td/tg"
 )
 
@@ -186,7 +187,12 @@ func (c *Context) Send(text string) error {
 // SendTo sends a message to a specific user ID.
 func (c *Context) SendTo(userID int64, text string) error {
 	sender := message.NewSender(c.bot.api)
-	_, err := sender.To(&tg.InputPeerUser{UserID: userID}).Text(c, text)
+	p, err := peer.EntitiesFromUpdate(c.entities).ExtractPeer(&tg.PeerUser{UserID: userID})
+	if err != nil {
+		// Fallback without access hash (works for bots that have interacted with the user)
+		p = &tg.InputPeerUser{UserID: userID}
+	}
+	_, err = sender.To(p).Text(c, text)
 	return err
 }
 
@@ -194,15 +200,11 @@ func (c *Context) inputPeer() tg.InputPeerClass {
 	if c.message == nil {
 		return nil
 	}
-	switch peer := c.message.PeerID.(type) {
-	case *tg.PeerChannel:
-		return &tg.InputPeerChannel{ChannelID: peer.ChannelID}
-	case *tg.PeerChat:
-		return &tg.InputPeerChat{ChatID: peer.ChatID}
-	case *tg.PeerUser:
-		return &tg.InputPeerUser{UserID: peer.UserID}
+	p, err := peer.EntitiesFromUpdate(c.entities).ExtractPeer(c.message.PeerID)
+	if err != nil {
+		return nil
 	}
-	return nil
+	return p
 }
 
 // updateToMessage converts the update to a message interface for reply.
