@@ -27,9 +27,15 @@ type tagEvent struct {
 	priority int // for sorting: starts before ends at same position
 }
 
+// Options configures optional behavior of EntitiesToHTML.
+type Options struct {
+	// HashtagHref returns href for a hashtag. tag is the keyword without "#". "" → <strong>; nil → tg://hashtag?q=<tag>.
+	HashtagHref func(tag string) string
+}
+
 // EntitiesToHTML converts Telegram message entities to HTML.
 // Properly handles overlapping/nested entities.
-func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string {
+func EntitiesToHTML(text string, entities []tg.MessageEntityClass, opts ...Options) string {
 	if len(entities) == 0 {
 		return html.EscapeString(text)
 	}
@@ -130,8 +136,18 @@ func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string {
 				continue
 			}
 			tag := strings.TrimPrefix(string(runes[offset:offset+length]), "#")
-			startTag = `<a href="tg://hashtag?q=` + html.EscapeString(tag) + `">`
-			endTag = "</a>"
+			var href string
+			if len(opts) > 0 && opts[0].HashtagHref != nil {
+				href = opts[0].HashtagHref(tag)
+			} else {
+				href = "tg://hashtag?q=" + html.EscapeString(tag)
+			}
+			if href == "" {
+				startTag, endTag = "<strong>", "</strong>"
+			} else {
+				startTag = `<a href="` + href + `">`
+				endTag = "</a>"
+			}
 		case *tg.MessageEntityCustomEmoji:
 			continue
 		default:

@@ -838,6 +838,36 @@ func TestEntitiesToHTML_Nested(t *testing.T) {
 	}
 }
 
+func TestEntitiesToHTML_HashtagHrefOption(t *testing.T) {
+	text := "check #bitcoin today"
+	entities := []tg.MessageEntityClass{
+		&tg.MessageEntityHashtag{Offset: 6, Length: 8},
+	}
+	result := EntitiesToHTML(text, entities, Options{
+		HashtagHref: func(tag string) string {
+			return "https://t.me/s/mychannel?q=%23" + tag
+		},
+	})
+	want := `check <a href="https://t.me/s/mychannel?q=%23bitcoin">#bitcoin</a> today`
+	if result != want {
+		t.Errorf("expected %q\ngot      %q", want, result)
+	}
+}
+
+func TestEntitiesToHTML_HashtagHrefEmpty(t *testing.T) {
+	text := "check #bitcoin today"
+	entities := []tg.MessageEntityClass{
+		&tg.MessageEntityHashtag{Offset: 6, Length: 8},
+	}
+	result := EntitiesToHTML(text, entities, Options{
+		HashtagHref: func(tag string) string { return "" },
+	})
+	want := "check <strong>#bitcoin</strong> today"
+	if result != want {
+		t.Errorf("expected %q\ngot      %q", want, result)
+	}
+}
+
 func TestEntitiesToHTML_SamePosition(t *testing.T) {
 	// Test: Bold and italic starting at same position
 	text := "styled text"
