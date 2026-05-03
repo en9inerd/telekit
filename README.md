@@ -106,7 +106,7 @@ if err := bot.Run(context.Background()); err != nil {
 ## Index
 
 - [Variables](<#variables>)
-- [func EntitiesToHTML\(text string, entities \[\]tg.MessageEntityClass\) string](<#EntitiesToHTML>)
+- [func EntitiesToHTML\(text string, entities \[\]tg.MessageEntityClass, opts ...Options\) string](<#EntitiesToHTML>)
 - [type Bot](<#Bot>)
   - [func New\(cfg Config\) \(\*Bot, error\)](<#New>)
   - [func \(b \*Bot\) API\(\) \*tg.Client](<#Bot.API>)
@@ -191,6 +191,7 @@ if err := bot.Run(context.Background()); err != nil {
 - [type DeleteFunc](<#DeleteFunc>)
 - [type Filter](<#Filter>)
 - [type HandlerFunc](<#HandlerFunc>)
+- [type Options](<#Options>)
 - [type ParamSchema](<#ParamSchema>)
 - [type ParamType](<#ParamType>)
 - [type Params](<#Params>)
@@ -239,7 +240,7 @@ var (
 ## func EntitiesToHTML
 
 ```go
-func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string
+func EntitiesToHTML(text string, entities []tg.MessageEntityClass, opts ...Options) string
 ```
 
 EntitiesToHTML converts Telegram message entities to HTML. Properly handles overlapping/nested entities.
@@ -1152,6 +1153,18 @@ HandlerFunc is the function signature for event handlers.
 
 ```go
 type HandlerFunc func(ctx *Context) error
+```
+
+<a name="Options"></a>
+## type Options
+
+Options configures optional behavior of EntitiesToHTML.
+
+```go
+type Options struct {
+    // HashtagHref returns href for a hashtag. tag is the keyword without "#". "" → <strong>; nil → tg://hashtag?q=<tag>.
+    HashtagHref func(tag string) string
+}
 ```
 
 <a name="ParamSchema"></a>
