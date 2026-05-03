@@ -81,9 +81,7 @@ func parseParams(text string, schema Params) (ParsedParams, error) {
 
 	raw := make(map[string]string)
 	for _, part := range parts[1:] {
-		if idx := strings.Index(part, "="); idx > 0 {
-			key := part[:idx]
-			value := part[idx+1:]
+		if key, value, ok := strings.Cut(part, "="); ok && key != "" {
 			raw[key] = value
 		}
 	}

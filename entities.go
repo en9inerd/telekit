@@ -124,6 +124,14 @@ func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string {
 			url := string(runes[offset : offset+length])
 			startTag = "<a href=\"" + html.EscapeString(url) + "\">"
 			endTag = "</a>"
+		case *tg.MessageEntityHashtag:
+			offset, length = e.Offset, e.Length
+			if offset < 0 || offset+length > len(runes) {
+				continue
+			}
+			tag := strings.TrimSpace(strings.TrimPrefix(string(runes[offset:offset+length]), "#"))
+			startTag = `<a href="tg://hashtag?q=` + tag + `">`
+			endTag = "</a>"
 		case *tg.MessageEntityCustomEmoji:
 			continue
 		default:

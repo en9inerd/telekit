@@ -16,8 +16,8 @@ func TestParseParams_NoSchema(t *testing.T) {
 
 func TestParseParams_TypedSchema(t *testing.T) {
 	schema := Params{
-		"name": {Type: TypeString, Required: true},
-		"count": {Type: TypeInt, Required: true},
+		"name":    {Type: TypeString, Required: true},
+		"count":   {Type: TypeInt, Required: true},
 		"verbose": {Type: TypeBool},
 	}
 	got, err := parseParams("/cmd name=test count=42 verbose=true", schema)

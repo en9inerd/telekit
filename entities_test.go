@@ -776,6 +776,14 @@ func TestEntitiesToHTML_AllBasicTypes(t *testing.T) {
 			},
 			contains: []string{"tg://user?id=999"},
 		},
+		{
+			name: "Hashtag",
+			text: "check #bitcoin today",
+			entities: []tg.MessageEntityClass{
+				&tg.MessageEntityHashtag{Offset: 6, Length: 8},
+			},
+			contains: []string{`<a href="tg://hashtag?q=bitcoin">#bitcoin</a>`},
+		},
 	}
 
 	for _, tt := range tests {

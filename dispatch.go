@@ -124,8 +124,8 @@ func (b *Bot) handleCommand(ctx *Context) error {
 	}
 
 	cmdName := strings.TrimPrefix(parts[0], "/")
-	if idx := strings.Index(cmdName, "@"); idx > 0 {
-		cmdName = cmdName[:idx]
+	if name, _, ok := strings.Cut(cmdName, "@"); ok && name != "" {
+		cmdName = name
 	}
 
 	b.config.Logger.Debug("received command",
