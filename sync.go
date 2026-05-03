@@ -24,7 +24,6 @@ func (b *Bot) SyncCommands(ctx context.Context) error {
 	handlers := b.commandHandlers
 	b.mu.RUnlock()
 
-	// Group commands by scope and language
 	grouped := make(map[string][]tg.BotCommand)
 	scopes := make(map[string]CommandScope)
 
@@ -41,7 +40,6 @@ func (b *Bot) SyncCommands(ctx context.Context) error {
 		key := scopeKeyString(scope, h.langCode)
 		scopes[key] = scope
 
-		// Check for duplicate command in same scope
 		exists := false
 		for _, cmd := range grouped[key] {
 			if cmd.Command == h.name {

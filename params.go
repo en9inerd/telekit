@@ -22,16 +22,12 @@ type ParamSchema struct {
 	// Type is the parameter type (string, int, bool, enum).
 	Type ParamType
 
-	// Required indicates if the parameter must be provided.
 	Required bool
 
-	// Default is the default value if not provided.
 	Default any
 
-	// Enum contains allowed values for enum type.
 	Enum []string
 
-	// Description is a human-readable description for help text.
 	Description string
 }
 

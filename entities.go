@@ -201,7 +201,6 @@ func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string {
 	lastPos := 0
 	alreadyClosed := make(map[int]bool) // track entities we've already written close tags for
 
-	// Track which entities are closing at each position (for same-position optimization)
 	closingAt := make(map[int]map[int]bool) // pos -> entity id -> true
 	for _, event := range events {
 		if !event.isStart {
@@ -212,7 +211,6 @@ func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string {
 		}
 	}
 
-	// Helper to check if currently inside a blockquote
 	insideBlockquote := func() bool {
 		for _, e := range openStack {
 			if e.isBlockquote {
@@ -291,7 +289,6 @@ func EntitiesToHTML(text string, entities []tg.MessageEntityClass) string {
 					if closingAt[event.pos] != nil && closingAt[event.pos][e.id] {
 						continue // Also closing at this position
 					}
-					// Reopen and add back to stack
 					result.WriteString(e.startTag)
 					openStack = append(openStack, e)
 					delete(alreadyClosed, e.id)
