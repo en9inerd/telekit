@@ -7,6 +7,43 @@ import (
 	"testing"
 )
 
+func TestResolveChannelInfo_NumericID(t *testing.T) {
+	bot := &Bot{}
+	info, err := bot.ResolveChannelInfo(t.Context(), "-1001234567890")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if info.ID != -1001234567890 {
+		t.Errorf("ID = %d, want -1001234567890", info.ID)
+	}
+	if info.AccessHash != 0 {
+		t.Errorf("AccessHash = %d, want 0", info.AccessHash)
+	}
+	if info.Title != "" {
+		t.Errorf("Title = %q, want \"\" (not populated for numeric IDs)", info.Title)
+	}
+	if info.Username != "" {
+		t.Errorf("Username = %q, want \"\"", info.Username)
+	}
+}
+
+func TestResolveUserInfo_NumericID(t *testing.T) {
+	bot := &Bot{}
+	info, err := bot.ResolveUserInfo(t.Context(), "123456789")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if info.ID != 123456789 {
+		t.Errorf("ID = %d, want 123456789", info.ID)
+	}
+	if info.AccessHash != 0 {
+		t.Errorf("AccessHash = %d, want 0", info.AccessHash)
+	}
+	if info.Username != "" {
+		t.Errorf("Username = %q, want \"\"", info.Username)
+	}
+}
+
 func TestParseScopeKey(t *testing.T) {
 	tests := []struct {
 		name         string

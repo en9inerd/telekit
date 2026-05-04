@@ -29,7 +29,7 @@ type tagEvent struct {
 
 // Options configures optional behavior of EntitiesToHTML.
 type Options struct {
-	// HashtagHref returns href for a hashtag. tag is the keyword without "#". "" → <strong>; nil → tg://hashtag?q=<tag>.
+	// HashtagHref returns href for a hashtag. tag is the keyword without "#". "" -> <strong>; nil -> tg://hashtag?q=<tag>.
 	HashtagHref func(tag string) string
 }
 

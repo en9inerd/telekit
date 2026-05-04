@@ -193,50 +193,30 @@ func (b *Bot) SetCommandsForScope(ctx context.Context, scope CommandScope, langC
 type ChannelInfo struct {
 	ID         int64
 	AccessHash int64
-	Username   string // empty for private channels
-	Title      string
+	Username   string // empty for private channels or when resolved by numeric ID
+	Title      string // empty when resolved by numeric ID
 }
 
-// ResolveIdentifier resolves an identifier (numeric ID or @username).
-// For channels resolved by numeric ID, username is empty and title holds the ID string.
-// For users, both username and title are empty.
-func (b *Bot) ResolveIdentifier(ctx context.Context, identifier string, isChannel bool) (id, accessHash int64, username, title string, err error) {
+// UserInfo contains resolved user information.
+type UserInfo struct {
+	ID         int64
+	AccessHash int64
+	Username   string
+}
+
+// ResolveChannelInfo resolves a channel by @username or numeric ID.
+// For numeric IDs, AccessHash is 0 (valid for bots that are members of the channel).
+func (b *Bot) ResolveChannelInfo(ctx context.Context, identifier string) (*ChannelInfo, error) {
 	identifier = strings.TrimSpace(identifier)
-
 	if id, err := strconv.ParseInt(identifier, 10, 64); err == nil {
-		return id, 0, "", strconv.FormatInt(id, 10), nil
+		return &ChannelInfo{ID: id}, nil
 	}
 
-	if isChannel {
-		info, err := b.ResolveChannelInfo(ctx, strings.TrimPrefix(identifier, "@"))
-		if err != nil {
-			return 0, 0, "", "", err
-		}
-		return info.ID, info.AccessHash, info.Username, info.Title, nil
-	}
-
-	userID, accessHash, err := b.ResolveUser(ctx, strings.TrimPrefix(identifier, "@"))
-	if err != nil {
-		return 0, 0, "", "", err
-	}
-	return userID, accessHash, "", "", nil
-}
-
-// ResolveChannel resolves a channel by username and returns its ID and access hash.
-func (b *Bot) ResolveChannel(ctx context.Context, username string) (channelID, accessHash int64, err error) {
-	info, err := b.ResolveChannelInfo(ctx, username)
-	if err != nil {
-		return 0, 0, err
-	}
-	return info.ID, info.AccessHash, nil
-}
-
-// ResolveChannelInfo resolves a channel by username and returns full channel info.
-func (b *Bot) ResolveChannelInfo(ctx context.Context, username string) (*ChannelInfo, error) {
 	if b.api == nil {
 		return nil, ErrBotNotRunning
 	}
 
+	username := strings.TrimPrefix(identifier, "@")
 	resolved, err := b.api.ContactsResolveUsername(ctx, &tg.ContactsResolveUsernameRequest{
 		Username: username,
 	})
@@ -257,25 +237,36 @@ func (b *Bot) ResolveChannelInfo(ctx context.Context, username string) (*Channel
 	return nil, fmt.Errorf("@%s is not a channel", username)
 }
 
-// ResolveUser resolves a user by username and returns their ID and access hash.
-func (b *Bot) ResolveUser(ctx context.Context, username string) (userID, accessHash int64, err error) {
-	if b.api == nil {
-		return 0, 0, ErrBotNotRunning
+// ResolveUserInfo resolves a user by @username or numeric ID.
+// For numeric IDs, AccessHash is 0 (valid for bots that have interacted with the user).
+func (b *Bot) ResolveUserInfo(ctx context.Context, identifier string) (*UserInfo, error) {
+	identifier = strings.TrimSpace(identifier)
+	if id, err := strconv.ParseInt(identifier, 10, 64); err == nil {
+		return &UserInfo{ID: id}, nil
 	}
 
+	if b.api == nil {
+		return nil, ErrBotNotRunning
+	}
+
+	username := strings.TrimPrefix(identifier, "@")
 	resolved, err := b.api.ContactsResolveUsername(ctx, &tg.ContactsResolveUsernameRequest{
 		Username: username,
 	})
 	if err != nil {
-		return 0, 0, fmt.Errorf("failed to resolve @%s: %w", username, err)
+		return nil, fmt.Errorf("failed to resolve @%s: %w", username, err)
 	}
 
 	for _, user := range resolved.Users {
 		if u, ok := user.(*tg.User); ok {
-			return u.ID, u.AccessHash, nil
+			return &UserInfo{
+				ID:         u.ID,
+				AccessHash: u.AccessHash,
+				Username:   u.Username,
+			}, nil
 		}
 	}
-	return 0, 0, fmt.Errorf("@%s is not a user", username)
+	return nil, fmt.Errorf("@%s is not a user", username)
 }
 
 func (b *Bot) commandScopesFile() string {
