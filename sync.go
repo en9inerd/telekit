@@ -197,35 +197,29 @@ type ChannelInfo struct {
 	Title      string
 }
 
-// ResolveIdentifier resolves an identifier (numeric ID or @username) and returns ID, access hash, and display title.
-// For channels, title fallback order: username || title. For users, title is empty.
-func (b *Bot) ResolveIdentifier(ctx context.Context, identifier string, isChannel bool) (id, accessHash int64, title string, err error) {
+// ResolveIdentifier resolves an identifier (numeric ID or @username).
+// For channels resolved by numeric ID, username is empty and title holds the ID string.
+// For users, both username and title are empty.
+func (b *Bot) ResolveIdentifier(ctx context.Context, identifier string, isChannel bool) (id, accessHash int64, username, title string, err error) {
 	identifier = strings.TrimSpace(identifier)
 
 	if id, err := strconv.ParseInt(identifier, 10, 64); err == nil {
-		return id, 0, strconv.FormatInt(id, 10), nil
+		return id, 0, "", strconv.FormatInt(id, 10), nil
 	}
-
-	username := strings.TrimPrefix(identifier, "@")
 
 	if isChannel {
-		info, err := b.ResolveChannelInfo(ctx, username)
+		info, err := b.ResolveChannelInfo(ctx, strings.TrimPrefix(identifier, "@"))
 		if err != nil {
-			return 0, 0, "", err
+			return 0, 0, "", "", err
 		}
-		// Fallback: username || title
-		title = info.Username
-		if title == "" {
-			title = info.Title
-		}
-		return info.ID, info.AccessHash, title, nil
+		return info.ID, info.AccessHash, info.Username, info.Title, nil
 	}
 
-	userID, accessHash, err := b.ResolveUser(ctx, username)
+	userID, accessHash, err := b.ResolveUser(ctx, strings.TrimPrefix(identifier, "@"))
 	if err != nil {
-		return 0, 0, "", err
+		return 0, 0, "", "", err
 	}
-	return userID, accessHash, "", nil
+	return userID, accessHash, "", "", nil
 }
 
 // ResolveChannel resolves a channel by username and returns its ID and access hash.
