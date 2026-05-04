@@ -132,7 +132,7 @@ if err := bot.Run(context.Background()); err != nil {
   - [func \(b \*Bot\) ResetCommands\(ctx context.Context\) error](<#Bot.ResetCommands>)
   - [func \(b \*Bot\) ResolveChannel\(ctx context.Context, username string\) \(channelID, accessHash int64, err error\)](<#Bot.ResolveChannel>)
   - [func \(b \*Bot\) ResolveChannelInfo\(ctx context.Context, username string\) \(\*ChannelInfo, error\)](<#Bot.ResolveChannelInfo>)
-  - [func \(b \*Bot\) ResolveIdentifier\(ctx context.Context, identifier string, isChannel bool\) \(id, accessHash int64, title string, err error\)](<#Bot.ResolveIdentifier>)
+  - [func \(b \*Bot\) ResolveIdentifier\(ctx context.Context, identifier string, isChannel bool\) \(id, accessHash int64, username, title string, err error\)](<#Bot.ResolveIdentifier>)
   - [func \(b \*Bot\) ResolveUser\(ctx context.Context, username string\) \(userID, accessHash int64, err error\)](<#Bot.ResolveUser>)
   - [func \(b \*Bot\) Run\(ctx context.Context\) error](<#Bot.Run>)
   - [func \(b \*Bot\) SelfID\(\) int64](<#Bot.SelfID>)
@@ -476,10 +476,10 @@ ResolveChannelInfo resolves a channel by username and returns full channel info.
 ### func \(\*Bot\) ResolveIdentifier
 
 ```go
-func (b *Bot) ResolveIdentifier(ctx context.Context, identifier string, isChannel bool) (id, accessHash int64, title string, err error)
+func (b *Bot) ResolveIdentifier(ctx context.Context, identifier string, isChannel bool) (id, accessHash int64, username, title string, err error)
 ```
 
-ResolveIdentifier resolves an identifier \(numeric ID or @username\) and returns ID, access hash, and display title. For channels, title fallback order: username || title. For users, title is empty.
+ResolveIdentifier resolves an identifier \(numeric ID or @username\). For channels resolved by numeric ID, username is empty and title holds the ID string. For users, both username and title are empty.
 
 <a name="Bot.ResolveUser"></a>
 ### func \(\*Bot\) ResolveUser
