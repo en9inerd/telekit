@@ -130,10 +130,8 @@ if err := bot.Run(context.Background()); err != nil {
   - [func \(b \*Bot\) OnPrivateMessage\(userIDs \[\]int64, fn HandlerFunc\)](<#Bot.OnPrivateMessage>)
   - [func \(b \*Bot\) OnReady\(fn func\(ctx context.Context\)\)](<#Bot.OnReady>)
   - [func \(b \*Bot\) ResetCommands\(ctx context.Context\) error](<#Bot.ResetCommands>)
-  - [func \(b \*Bot\) ResolveChannel\(ctx context.Context, username string\) \(channelID, accessHash int64, err error\)](<#Bot.ResolveChannel>)
-  - [func \(b \*Bot\) ResolveChannelInfo\(ctx context.Context, username string\) \(\*ChannelInfo, error\)](<#Bot.ResolveChannelInfo>)
-  - [func \(b \*Bot\) ResolveIdentifier\(ctx context.Context, identifier string, isChannel bool\) \(id, accessHash int64, username, title string, err error\)](<#Bot.ResolveIdentifier>)
-  - [func \(b \*Bot\) ResolveUser\(ctx context.Context, username string\) \(userID, accessHash int64, err error\)](<#Bot.ResolveUser>)
+  - [func \(b \*Bot\) ResolveChannelInfo\(ctx context.Context, identifier string\) \(\*ChannelInfo, error\)](<#Bot.ResolveChannelInfo>)
+  - [func \(b \*Bot\) ResolveUserInfo\(ctx context.Context, identifier string\) \(\*UserInfo, error\)](<#Bot.ResolveUserInfo>)
   - [func \(b \*Bot\) Run\(ctx context.Context\) error](<#Bot.Run>)
   - [func \(b \*Bot\) SelfID\(\) int64](<#Bot.SelfID>)
   - [func \(b \*Bot\) SetCommandsForScope\(ctx context.Context, scope CommandScope, langCode string, commands \[\]CommandRegistration\) error](<#Bot.SetCommandsForScope>)
@@ -213,6 +211,7 @@ if err := bot.Run(context.Background()); err != nil {
 - [type ScopeDefault](<#ScopeDefault>)
 - [type ScopeUser](<#ScopeUser>)
 - [type ScopeUsername](<#ScopeUsername>)
+- [type UserInfo](<#UserInfo>)
 
 
 ## Variables
@@ -454,41 +453,23 @@ func (b *Bot) ResetCommands(ctx context.Context) error
 
 ResetCommands removes all bot commands from Telegram. It resets commands for all scope\+langCode combinations that were previously saved.
 
-<a name="Bot.ResolveChannel"></a>
-### func \(\*Bot\) ResolveChannel
-
-```go
-func (b *Bot) ResolveChannel(ctx context.Context, username string) (channelID, accessHash int64, err error)
-```
-
-ResolveChannel resolves a channel by username and returns its ID and access hash.
-
 <a name="Bot.ResolveChannelInfo"></a>
 ### func \(\*Bot\) ResolveChannelInfo
 
 ```go
-func (b *Bot) ResolveChannelInfo(ctx context.Context, username string) (*ChannelInfo, error)
+func (b *Bot) ResolveChannelInfo(ctx context.Context, identifier string) (*ChannelInfo, error)
 ```
 
-ResolveChannelInfo resolves a channel by username and returns full channel info.
+ResolveChannelInfo resolves a channel by @username or numeric ID. For numeric IDs, AccessHash is 0 \(valid for bots that are members of the channel\).
 
-<a name="Bot.ResolveIdentifier"></a>
-### func \(\*Bot\) ResolveIdentifier
+<a name="Bot.ResolveUserInfo"></a>
+### func \(\*Bot\) ResolveUserInfo
 
 ```go
-func (b *Bot) ResolveIdentifier(ctx context.Context, identifier string, isChannel bool) (id, accessHash int64, username, title string, err error)
+func (b *Bot) ResolveUserInfo(ctx context.Context, identifier string) (*UserInfo, error)
 ```
 
-ResolveIdentifier resolves an identifier \(numeric ID or @username\). For channels resolved by numeric ID, username is empty and title holds the ID string. For users, both username and title are empty.
-
-<a name="Bot.ResolveUser"></a>
-### func \(\*Bot\) ResolveUser
-
-```go
-func (b *Bot) ResolveUser(ctx context.Context, username string) (userID, accessHash int64, err error)
-```
-
-ResolveUser resolves a user by username and returns their ID and access hash.
+ResolveUserInfo resolves a user by @username or numeric ID. For numeric IDs, AccessHash is 0 \(valid for bots that have interacted with the user\).
 
 <a name="Bot.Run"></a>
 ### func \(\*Bot\) Run
@@ -695,8 +676,8 @@ ChannelInfo contains resolved channel information.
 type ChannelInfo struct {
     ID         int64
     AccessHash int64
-    Username   string // empty for private channels
-    Title      string
+    Username   string // empty for private channels or when resolved by numeric ID
+    Title      string // empty when resolved by numeric ID
 }
 ```
 
@@ -1162,7 +1143,7 @@ Options configures optional behavior of EntitiesToHTML.
 
 ```go
 type Options struct {
-    // HashtagHref returns href for a hashtag. tag is the keyword without "#". "" → <strong>; nil → tg://hashtag?q=<tag>.
+    // HashtagHref returns href for a hashtag. tag is the keyword without "#". "" -> <strong>; nil -> tg://hashtag?q=<tag>.
     HashtagHref func(tag string) string
 }
 ```
@@ -1401,6 +1382,19 @@ ScopeUsername makes the command available to a user by username. The username is
 ```go
 type ScopeUsername struct {
     Username string // Without @ prefix
+}
+```
+
+<a name="UserInfo"></a>
+## type UserInfo
+
+UserInfo contains resolved user information.
+
+```go
+type UserInfo struct {
+    ID         int64
+    AccessHash int64
+    Username   string
 }
 ```
 
