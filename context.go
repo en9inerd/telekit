@@ -2,6 +2,7 @@ package telekit
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gotd/td/telegram/message"
 	"github.com/gotd/td/telegram/message/peer"
@@ -179,8 +180,12 @@ func (c *Context) Send(text string) error {
 	if c.message == nil {
 		return nil
 	}
+	p := c.inputPeer()
+	if p == nil {
+		return fmt.Errorf("telekit: cannot resolve peer for message %d", c.message.ID)
+	}
 	sender := message.NewSender(c.bot.api)
-	_, err := sender.To(c.inputPeer()).Text(c, text)
+	_, err := sender.To(p).Text(c, text)
 	return err
 }
 

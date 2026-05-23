@@ -298,6 +298,7 @@ func (b *Bot) Run(ctx context.Context) error {
 		b.config.Logger.Info("bot started", "id", self.ID, "username", self.Username)
 
 		return b.gaps.Run(ctx, b.api, self.ID, updates.AuthOptions{
+			IsBot: true,
 			OnStart: func(ctx context.Context) {
 				b.config.Logger.Info("listening for updates")
 			},

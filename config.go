@@ -132,6 +132,5 @@ func (c *Config) zapLogger() *zap.Logger {
 		},
 	}
 
-	logger, _ := cfg.Build()
-	return logger
+	return zap.Must(cfg.Build())
 }
